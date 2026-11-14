@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     # Pre-installed Playwright + Chromium container avoids slow browser downloads
     container:
-      image: mcr.microsoft.com/playwright/python:v1.58.0-noble
+      image: mcr.microsoft.com/playwright/python:v1.65.2-noble
 
     steps:
       - name: Checkout repository
