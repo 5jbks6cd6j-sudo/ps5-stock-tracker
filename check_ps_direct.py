@@ -2,10 +2,8 @@ import logging
 import os
 from curl_cffi import requests
 from bs4 import BeautifulSoup
+from utils import send_telegram_alert, disable_github_workflow
 
-# --- CONFIGURATION (Loaded from GitHub Secrets) ---
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 TARGET_URL = "https://www.playstation.com/pt-pt/ps5/ps5-pro/buy-now/product/PSD001-PSDE01942_39-PS5PROCHASASIRSE/"
 
 # Timing (Base 90 seconds + 10 to 30 seconds of random jitter)
@@ -23,20 +21,6 @@ logging.basicConfig(
 
 # Use a session to maintain cookies like a real browser
 session = requests.Session()
-
-def send_telegram_message(message):
-    try:
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        payload = {
-            "chat_id": TELEGRAM_CHAT_ID,
-            "text": message,
-            "parse_mode": "HTML"
-        }
-        response = requests.post(url, json=payload, timeout=10)
-        if response.status_code != 200:
-            logging.error(f"Failed to send Telegram message: {response.text}")
-    except Exception as e:
-        logging.error(f"Error sending Telegram notification: {e}")
 
 def check_stock():
     try:
@@ -63,7 +47,8 @@ def check_stock():
                 "A PS5 Pro console was detected on playstation.com!\n"
                 f"Check it immediately:\n{TARGET_URL}"
             )
-            send_telegram_message(alert_msg)
+            send_telegram_alert(alert_msg)
+            disable_github_workflow()
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Network error occurred: {e}")

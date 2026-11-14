@@ -1,24 +1,13 @@
 import time
 import os
 import logging
+from curl_cffi import requests
 from playwright.sync_api import sync_playwright
+from utils import send_telegram_alert, disable_github_workflow
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 WORTEN_SEARCH_URL = "https://www.worten.pt/search?query=ps5+pro&f.range_visibility=True&f.seller_id=Worten&f.brand_name=SONY+PLAYSTATION&f.storage=2+TB"
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO)
-
-def send_telegram_alert(message):
-    try:
-        from curl_cffi import requests
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message, "parse_mode": "HTML"}
-        response = requests.post(url, json=payload, timeout=10)
-        if response.status_code != 200:
-            logging.error(f"Failed to send Telegram message: {response.text}")
-    except Exception as e:
-        logging.error(f"Telegram error: {e}")
 
 def check_worten_with_playwright():
     with sync_playwright() as p:
@@ -61,6 +50,7 @@ def check_worten_with_playwright():
                         f"Check immediately:\n{WORTEN_SEARCH_URL}"
                     )
                     send_telegram_alert(alert_msg)
+                    disable_github_workflow()
                     break
             else:
                 logging.info("Status: No official Worten PS5 Pro console in search results.")

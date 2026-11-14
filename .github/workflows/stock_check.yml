@@ -10,6 +10,8 @@ on:
 jobs:
   check-stock:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # (Optional: include this if your script needs to self-disable or push updates)
     # Pre-installed Playwright + Chromium container avoids slow browser downloads
     container:
       image: mcr.microsoft.com/playwright/python:v1.65.2-noble
@@ -25,10 +27,14 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: python check_ps_direct.py
 
       - name: Run Worten check
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: python check_worten.py
