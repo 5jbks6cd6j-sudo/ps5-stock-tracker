@@ -2,8 +2,8 @@ name: PS5 Pro Stock Tracker
 
 on:
   schedule:
-    # Runs every 5 minutes (minimum allowed by GitHub is 5 minutes: '*/5 * * * *')
-    - cron: '*/5 * * * *'
+    # Runs at :02, :07, :12, :17, etc. (minimum allowed by GitHub is 5 minutes: '*/5 * * * *')
+    - cron: '2-59/5 * * * *'
   # Enables a "Run workflow" button in GitHub UI for instant testing
   workflow_dispatch:
 
